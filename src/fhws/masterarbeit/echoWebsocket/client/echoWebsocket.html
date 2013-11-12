@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebSocket Test</title>
+  <script type="text/javascript">
+    var output;
+    var echoWebSocket;
+    
+    function init()
+    {
+      output = document.getElementById("ausgabe");
+    }
+    
+    function echo_send()
+    {
+      var ws_uri = "ws://localhost:8080/fhws.masterarbeit.echoWebsocket/echoWebsocket";
+      var message = document.getElementById("text_message").value;
+      writeToScreen("Connecting to " + ws_uri);
+      echoWebSocket = new WebSocket(ws_uri);
+      echoWebSocket.onopen = function(evt)
+                             {
+                              writeToScreen("Connected!");
+                              doSend(message);
+                             };
+      echoWebSocket.onmessage = function(evt)
+                                {
+                                  writeToScreen("Received this: " + evt.data);
+                                  echoWebSocket.close();
+                                };
+      echoWebSocket.onerror = function(evt)
+                              {
+                                writeToScreen("ERROR: " + evt.data);
+                                echoWebSocket.close();
+                              };
+    }
+    
+    function writeToScreen(message)
+    {
+      pre = document.createElement("p");
+      pre.style.wordWrap = "break-word";
+      pre.innerHTML = message;
+      output.appendChild(pre); 
+    }
+    
+    function doSend(message)
+    {
+      echoWebSocket.send(message);
+      writeToScreen("Sent message: " + message);
+    }
+  </script>
+</head>
+<body onload="init()">
+  <h1>Echo Server</h1>
+  <p>
+  <form>
+    <input type="button" id="button_send" name="button_send" value="Abschicken" onclick="echo_send()">
+    <input type="text" id="text_message" name="text_message">
+  </form>
+  </p>
+  <div id="ausgabe">
+  </div>
+</body>
+</html>
